@@ -46,7 +46,7 @@ function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
 export default function SettingsPage() {
   const { settings, updateSettings } = useAppStore()
   const { theme, toggle: toggleTheme } = useTheme()
-  const [tab, setTab] = useState<'general' | 'schedule' | 'billing'>('general')
+  const [tab, setTab] = useState<'general' | 'profile' | 'schedule' | 'privacy' | 'billing'>('general')
   const [saved, setSaved] = useState(false)
 
   const save = (updates: Partial<UserSettings>) => {
@@ -66,8 +66,8 @@ export default function SettingsPage() {
       </motion.div>
 
       {/* Tabs */}
-      <motion.div variants={item} className="flex items-center rounded-xl p-1 gap-0.5 w-fit" style={{ background: 'var(--surface-2)' }}>
-        {(['general', 'schedule', 'billing'] as const).map((t) => (
+      <motion.div variants={item} className="flex items-center rounded-xl p-1 gap-0.5 w-fit flex-wrap" style={{ background: 'var(--surface-2)' }}>
+        {(['general', 'profile', 'schedule', 'privacy', 'billing'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -237,6 +237,119 @@ export default function SettingsPage() {
                     )
                   })}
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {tab === 'profile' && (
+          <motion.div key="profile" variants={container} initial="hidden" animate="show" className="space-y-4">
+            <motion.div variants={item} className="card p-5 space-y-4">
+              <h2 className="text-sm font-bold text-main">Your Profile</h2>
+
+              <div>
+                <label className="label">Username</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-faint text-sm font-semibold">@</span>
+                  <input className="input pl-7 text-sm" placeholder="e.g. alex_s"
+                    value={settings.username ?? ''}
+                    onChange={(e) => save({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })} />
+                </div>
+                <p className="text-xs text-faint mt-1">Friends can search for you by this username</p>
+              </div>
+
+              <div>
+                <label className="label">Bio (optional)</label>
+                <textarea className="input resize-none text-sm" rows={2} placeholder="Tell your friends a bit about you..."
+                  value={settings.bio ?? ''}
+                  onChange={(e) => save({ bio: e.target.value })} />
+              </div>
+            </motion.div>
+
+            <motion.div variants={item} className="card p-5 space-y-4">
+              <h2 className="text-sm font-bold text-main">School Info</h2>
+
+              <div>
+                <label className="label">School Type</label>
+                <div className="flex gap-2">
+                  {(['middle', 'high', 'college'] as const).map((t) => (
+                    <motion.button key={t} whileTap={{ scale: 0.96 }}
+                      onClick={() => save({ schoolType: t })}
+                      className="flex-1 py-2.5 rounded-xl text-sm font-bold border-2 capitalize transition-all"
+                      style={settings.schoolType === t
+                        ? { background: 'rgba(124,59,255,0.1)', borderColor: 'var(--primary)', color: 'var(--primary)' }
+                        : { borderColor: 'var(--border)', color: 'var(--text-3)' }}>
+                      {t === 'high' ? 'High School' : t === 'college' ? 'College' : 'Middle School'}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">School Name</label>
+                  <input className="input text-sm" placeholder="e.g. Riverside High"
+                    value={settings.schoolName ?? ''}
+                    onChange={(e) => save({ schoolName: e.target.value })} />
+                </div>
+                <div>
+                  <label className="label">{settings.schoolType === 'college' ? 'Year' : 'Grade'}</label>
+                  <input className="input text-sm"
+                    placeholder={settings.schoolType === 'college' ? 'e.g. Freshman' : 'e.g. 11th'}
+                    value={settings.gradeYear ?? ''}
+                    onChange={(e) => save({ gradeYear: e.target.value })} />
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {tab === 'privacy' && (
+          <motion.div key="privacy" variants={container} initial="hidden" animate="show" className="space-y-4">
+            <motion.div variants={item} className="card p-5 space-y-5">
+              <h2 className="text-sm font-bold text-main">Privacy Controls</h2>
+
+              {[
+                {
+                  key: 'shareSchedule' as const,
+                  title: 'Share My Schedule',
+                  desc: 'Allow friends to view your weekly schedule (read-only)',
+                  icon: '📅',
+                },
+                {
+                  key: 'shareGPA' as const,
+                  title: 'Share My GPA',
+                  desc: 'Allow friends to see your GPA summary',
+                  icon: '📊',
+                },
+              ].map(({ key, title, desc, icon }) => (
+                <div key={key} className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl mt-0.5">{icon}</span>
+                    <div>
+                      <p className="text-sm font-semibold text-main">{title}</p>
+                      <p className="text-xs text-faint mt-0.5">{desc}</p>
+                    </div>
+                  </div>
+                  <Toggle on={!!(settings as any)[key]} onChange={() => save({ [key]: !(settings as any)[key] } as any)} />
+                </div>
+              ))}
+            </motion.div>
+
+            <motion.div variants={item} className="card p-5 space-y-3">
+              <h2 className="text-sm font-bold text-main">About Your Data</h2>
+              <p className="text-xs text-faint leading-relaxed">
+                Your schedule, assignments, and GPA are stored locally on this device.
+                Social features (friends, messages) are opt-in. You can remove friends at any
+                time from the Friends page. Messages are never shared with third parties.
+              </p>
+              <div className="flex gap-2 pt-1">
+                <span className="text-xs px-2 py-1 rounded-lg font-semibold" style={{ background: 'rgba(13,217,184,0.1)', color: '#0DD9B8' }}>
+                  🔒 Local-first storage
+                </span>
+                <span className="text-xs px-2 py-1 rounded-lg font-semibold" style={{ background: 'rgba(124,59,255,0.1)', color: 'var(--primary)' }}>
+                  👁 You control visibility
+                </span>
               </div>
             </motion.div>
           </motion.div>

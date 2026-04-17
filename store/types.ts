@@ -1,6 +1,9 @@
-export type Priority = 'low' | 'medium' | 'high'
+export type Priority     = 'low' | 'medium' | 'high'
 export type EventCategory = 'school' | 'personal' | 'work' | 'health' | 'social' | 'free'
-export type Plan = 'free' | 'pro'
+export type Plan         = 'free' | 'pro'
+export type SchoolType   = 'middle' | 'high' | 'college'
+
+// ─── Core planner types ───────────────────────────────────────────────────────
 
 export interface Subtask {
   id: string
@@ -12,7 +15,7 @@ export interface Assignment {
   id: string
   title: string
   subject: string
-  dueDate: string          // ISO date string
+  dueDate: string
   estimatedMinutes: number
   priority: Priority
   completed: boolean
@@ -24,14 +27,15 @@ export interface Assignment {
 export interface CalendarEvent {
   id: string
   title: string
-  date: string             // ISO date string (YYYY-MM-DD)
-  startTime: string        // "HH:MM"
-  endTime: string          // "HH:MM"
+  date: string
+  startTime: string
+  endTime: string
   category: EventCategory
   color?: string
   isAIGenerated?: boolean
-  assignmentId?: string    // links back to assignment if applicable
+  assignmentId?: string
   notes?: string
+  isPrivate?: boolean
 }
 
 export interface BucketItem {
@@ -48,8 +52,8 @@ export interface BucketItem {
 
 export interface FreeTimeBlock {
   id: string
-  label: string            // "Relax", "Gym", "Hang out"
-  dayOfWeek: number        // 0 = Sun, 6 = Sat
+  label: string
+  dayOfWeek: number
   startTime: string
   endTime: string
   color: string
@@ -57,17 +61,26 @@ export interface FreeTimeBlock {
 
 export interface UserSettings {
   name: string
-  wakeTime: string         // "HH:MM"
-  sleepTime: string        // "HH:MM"
+  wakeTime: string
+  sleepTime: string
   freeTimePerDayMinutes: number
   preferredFreeTimeSlots: string[]
   plan: Plan
-  aiUsesRemaining: number  // resets daily; 3 for free, unlimited for pro
-  aiUsesResetDate: string  // ISO date
+  aiUsesRemaining: number
+  aiUsesResetDate: string
   theme: 'default' | 'ocean' | 'forest' | 'sunset'
   notifications: boolean
   streakCount: number
   lastActiveDate: string
+  // Profile / school
+  username: string
+  schoolType: SchoolType
+  schoolName: string
+  gradeYear: string
+  bio: string
+  // Privacy
+  shareSchedule: boolean
+  shareGPA: boolean
 }
 
 export interface DaySchedule {
@@ -84,4 +97,48 @@ export interface ScheduledBlock {
   category: EventCategory
   assignmentId?: string
   priority?: Priority
+}
+
+// ─── GPA types ────────────────────────────────────────────────────────────────
+
+export interface GPAEntry {
+  id: string
+  className: string
+  grade: string          // 'A', 'B+', 'C-', or '95' (percentage)
+  credits: number        // 0 = unset / use equal weighting
+  semester: string       // e.g. 'Fall 2025'
+}
+
+export interface GPASemester {
+  name: string
+  entries: GPAEntry[]
+}
+
+// ─── Social types ─────────────────────────────────────────────────────────────
+
+export type FriendStatus = 'friend' | 'pending_sent' | 'pending_received'
+
+export interface Friend {
+  id: string
+  username: string
+  name: string
+  schoolName: string
+  schoolType: SchoolType
+  gradeYear: string
+  status: FriendStatus
+  addedDate: string
+  avatarColor: string    // hex — used as avatar background
+}
+
+export type MessageType = 'text' | 'study_invite'
+
+export interface Message {
+  id: string
+  fromId: string         // 'me' or friend id
+  toId: string
+  content: string
+  timestamp: string      // ISO string
+  type: MessageType
+  reaction?: '👍' | '❤️' | '🔥'
+  read: boolean
 }

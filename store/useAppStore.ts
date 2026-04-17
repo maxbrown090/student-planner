@@ -23,6 +23,15 @@ const defaultSettings: UserSettings = {
   notifications: true,
   streakCount: 0,
   lastActiveDate: today,
+  // Profile
+  username: '',
+  schoolType: 'high',
+  schoolName: '',
+  gradeYear: '',
+  bio: '',
+  // Privacy
+  shareSchedule: true,
+  shareGPA: false,
 }
 
 interface AppState {
