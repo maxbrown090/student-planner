@@ -68,13 +68,13 @@ export function OnboardingModal({ onComplete }: { onComplete: () => void }) {
   ]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 overflow-y-auto"
       style={{ background: 'rgba(8,7,26,0.7)', backdropFilter: 'blur(12px)' }}>
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="card w-full max-w-md overflow-hidden"
+        className="card w-full max-w-md overflow-hidden my-auto"
         style={{ boxShadow: '0 32px 96px rgba(0,0,0,0.4)' }}
       >
         {/* Header */}
@@ -96,7 +96,7 @@ export function OnboardingModal({ onComplete }: { onComplete: () => void }) {
         </div>
 
         {/* Steps */}
-        <div className="relative overflow-hidden" style={{ minHeight: 340 }}>
+        <div className="relative">
           <AnimatePresence mode="wait" custom={dir}>
             <motion.div
               key={step}
@@ -106,7 +106,7 @@ export function OnboardingModal({ onComplete }: { onComplete: () => void }) {
               animate="center"
               exit="exit"
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-              className="absolute inset-0 p-6 flex flex-col"
+              className="p-6 flex flex-col"
             >
               {/* ── Step 0: Welcome ─────────────────────────────────── */}
               {step === 0 && (
