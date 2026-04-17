@@ -1,9 +1,11 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAppStore } from '@/store/useAppStore'
 import { useSocialStore } from '@/store/useSocialStore'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { useToast } from '@/components/ui/ToastProvider'
+import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/ui/Logo'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
@@ -56,6 +58,18 @@ export function Sidebar() {
   const { settings, assignments } = useAppStore()
   const { unreadCount, friends } = useSocialStore()
   const { theme, toggle } = useTheme()
+  const toast  = useToast()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    try {
+      const supabase = createClient()
+      await supabase.auth.signOut()
+    } catch {}
+    toast.info('Signed out')
+    router.push('/auth')
+    router.refresh()
+  }
 
   const todayStr    = format(new Date(), 'yyyy-MM-dd')
   const taskBadge   = assignments.filter((a) => !a.completed && a.dueDate <= todayStr).length
@@ -160,6 +174,18 @@ export function Sidebar() {
           onMouseLeave={(e) => (e.currentTarget.style.background = '')}>
           <span className="text-base">{theme === 'dark' ? '☀️' : '🌙'}</span>
           <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+        </button>
+
+        <button onClick={handleSignOut}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all"
+          style={{ color: 'var(--text-2)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,71,87,0.08)'; e.currentTarget.style.color = '#FF4757' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = ''; e.currentTarget.style.color = 'var(--text-2)' }}>
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd" />
+            <path fillRule="evenodd" d="M19 10a.75.75 0 00-.75-.75H8.704l1.048-.943a.75.75 0 10-1.004-1.114l-2.5 2.25a.75.75 0 000 1.114l2.5 2.25a.75.75 0 101.004-1.114l-1.048-.943h9.546A.75.75 0 0019 10z" clipRule="evenodd" />
+          </svg>
+          <span>Sign Out</span>
         </button>
       </div>
     </aside>
