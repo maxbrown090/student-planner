@@ -15,7 +15,7 @@ type Filter = 'all' | 'pending' | 'completed' | 'overdue'
 type SortBy  = 'dueDate' | 'priority' | 'estimatedTime'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } }
-const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } } }
+const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } } }
 
 export default function AssignmentsPage() {
   const { assignments } = useAppStore()
@@ -99,7 +99,7 @@ export default function AssignmentsPage() {
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${pct}%` }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
               className="h-full rounded-full"
               style={{ background: 'linear-gradient(90deg, var(--primary), var(--accent))' }}
             />

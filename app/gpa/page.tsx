@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } }
-const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } } }
+const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } } }
 
 // ─── Pro Gate ────────────────────────────────────────────────────────────────
 
@@ -43,7 +43,7 @@ function ProGate() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
           className="card p-8 text-center max-w-sm mx-4 shadow-lift"
         >
           <div
@@ -104,7 +104,7 @@ function GPACircle({ gpa, label, size = 112 }: { gpa: number; label: string; siz
             strokeDasharray={circ}
             initial={{ strokeDashoffset: circ }}
             animate={{ strokeDashoffset: offset }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
             transform={`rotate(-90 ${size/2} ${size/2})`}
           />
         </svg>
@@ -145,7 +145,7 @@ function GradeRow({ entry, index, onChange, onDelete }: {
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 10, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
       className="grid items-center gap-2"
       style={{ gridTemplateColumns: '1fr 110px 72px 32px' }}
     >

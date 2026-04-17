@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: { allowedOrigins: ['localhost:3000'] },
+    // Skip bundling this optional package — only used at runtime when
+    // ANTHROPIC_API_KEY is set. The API route falls back to mock if absent.
+    serverComponentsExternalPackages: ['@anthropic-ai/sdk'],
   },
 }
 

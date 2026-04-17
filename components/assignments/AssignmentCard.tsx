@@ -61,7 +61,7 @@ export function AssignmentCard({ assignment, compact, onFocus }: Props) {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, x: -20, scale: 0.95 }}
-        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
         className={cn(
           'flex items-start gap-3 p-3 rounded-2xl border transition-all cursor-pointer group',
           assignment.completed ? 'opacity-50' : ''
@@ -113,7 +113,7 @@ export function AssignmentCard({ assignment, compact, onFocus }: Props) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: assignment.completed ? 0.55 : 1, y: 0 }}
         exit={{ opacity: 0, x: -24, scale: 0.95 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
         className="rounded-2xl overflow-hidden"
         style={{ border: `1px solid var(--border)`, background: 'var(--surface)' }}
         whileHover={!assignment.completed ? { y: -2, boxShadow: '0 8px 28px rgba(124,59,255,0.1)' } : {}}
@@ -201,7 +201,7 @@ export function AssignmentCard({ assignment, compact, onFocus }: Props) {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.max(4, ((7 - daysLeft) / 7) * 100)}%` }}
-                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
                       className="h-full rounded-full"
                       style={{ background: daysLeft <= 1 ? '#FF4757' : daysLeft <= 3 ? '#FFA040' : catColor }}
                     />
@@ -272,7 +272,7 @@ export function AssignmentCard({ assignment, compact, onFocus }: Props) {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
               className="overflow-hidden"
             >
               <div className="px-4 pb-4 space-y-1.5" style={{ borderTop: '1px solid var(--surface-2)' }}>

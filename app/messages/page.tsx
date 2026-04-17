@@ -41,7 +41,7 @@ function MessageBubble({
     <motion.div
       initial={{ opacity: 0, y: 8, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
       className={cn('flex items-end gap-2 group', isMe ? 'justify-end' : 'justify-start')}
     >
       <div
