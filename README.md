@@ -52,3 +52,4 @@ Open http://localhost:3000
 - **Notifications**: Add push notifications via web-push
 - **Mobile**: The app is responsive; wrap with Capacitor for native apps
 - **Calendar sync**: Add Google Calendar OAuth via NextAuth.js
+
