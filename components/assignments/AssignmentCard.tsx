@@ -7,6 +7,8 @@ import { cn, getDueDateLabel, formatTime, CATEGORY_COLORS, PRIORITY_CONFIG } fro
 import { generateTaskBreakdownMock } from '@/lib/ai-scheduler'
 import { AddAssignmentModal } from './AddAssignmentModal'
 import { AnimatedCheckbox } from '@/components/ui/AnimatedCheckbox'
+import { useToast } from '@/components/ui/ToastProvider'
+import { celebrateTask, celebrateAllDone } from '@/lib/confetti'
 import { differenceInDays, parseISO } from 'date-fns'
 
 interface Props {
@@ -16,7 +18,8 @@ interface Props {
 }
 
 export function AssignmentCard({ assignment, compact, onFocus }: Props) {
-  const { toggleAssignment, deleteAssignment, addSubtask, toggleSubtask, deleteSubtask, consumeAIUse, settings } = useAppStore()
+  const { toggleAssignment, deleteAssignment, addSubtask, toggleSubtask, deleteSubtask, consumeAIUse, settings, assignments } = useAppStore()
+  const toast = useToast()
   const [expanded, setExpanded] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const [newSubtask, setNewSubtask] = useState('')
@@ -38,10 +41,25 @@ export function AssignmentCard({ assignment, compact, onFocus }: Props) {
     }
   }
 
+  const handleToggle = () => {
+    const willComplete = !assignment.completed
+    toggleAssignment(assignment.id)
+    if (willComplete) {
+      celebrateTask()
+      const remaining = assignments.filter(a => !a.completed && a.id !== assignment.id).length
+      if (remaining === 0) {
+        setTimeout(celebrateAllDone, 400)
+        toast.success('All done! 🎉 Crushing it today.')
+      } else {
+        toast.success(`"${assignment.title}" complete! ${remaining} left.`)
+      }
+    }
+  }
+
   const handleAIBreakdown = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (!consumeAIUse()) {
-      alert("You've used all AI credits for today. Upgrade to Pro for unlimited access.")
+      toast.error('No AI credits left today. Upgrade to Pro for unlimited.')
       return
     }
     setGeneratingSubtasks(true)
@@ -77,7 +95,7 @@ export function AssignmentCard({ assignment, compact, onFocus }: Props) {
         <div onClick={(e) => e.stopPropagation()}>
           <AnimatedCheckbox
             checked={assignment.completed}
-            onChange={() => toggleAssignment(assignment.id)}
+            onChange={handleToggle}
             size={20}
             color={catColor}
           />
@@ -126,7 +144,7 @@ export function AssignmentCard({ assignment, compact, onFocus }: Props) {
             <div className="mt-0.5">
               <AnimatedCheckbox
                 checked={assignment.completed}
-                onChange={() => toggleAssignment(assignment.id)}
+                onChange={handleToggle}
                 size={22}
                 color={catColor}
               />

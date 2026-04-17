@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { useAppStore } from '@/store/useAppStore'
+import { useToast } from '@/components/ui/ToastProvider'
 import { generateScheduleMock } from '@/lib/ai-scheduler'
 import { cn, formatTime } from '@/lib/utils'
 import { format, addDays } from 'date-fns'
@@ -16,13 +17,15 @@ type Step = 'config' | 'generating' | 'result'
 
 export function PlanMyDayModal({ open, onClose }: Props) {
   const { assignments, events, freeTimeBlocks, settings, consumeAIUse, setGeneratedSchedules } = useAppStore()
+  const toast = useToast()
   const [step, setStep] = useState<Step>('config')
   const [planDays, setPlanDays] = useState<1 | 7>(7)
   const [result, setResult] = useState<ReturnType<typeof generateScheduleMock> | null>(null)
 
   const handleGenerate = () => {
     if (!consumeAIUse()) {
-      alert('You\'ve used all your AI credits for today. Upgrade to Pro for unlimited access!')
+      toast.error('No AI credits left today. Upgrade to Pro for unlimited access.')
+      onClose()
       return
     }
     setStep('generating')

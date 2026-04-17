@@ -32,6 +32,8 @@ const defaultSettings: UserSettings = {
   // Privacy
   shareSchedule: true,
   shareGPA: false,
+  // Onboarding
+  hasOnboarded: false,
 }
 
 interface AppState {

@@ -81,6 +81,8 @@ export interface UserSettings {
   // Privacy
   shareSchedule: boolean
   shareGPA: boolean
+  // Onboarding
+  hasOnboarded: boolean
 }
 
 export interface DaySchedule {

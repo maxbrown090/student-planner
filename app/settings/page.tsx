@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppStore } from '@/store/useAppStore'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { useToast } from '@/components/ui/ToastProvider'
 import { cn, formatTime } from '@/lib/utils'
 import { UserSettings } from '@/store/types'
 
@@ -46,6 +47,7 @@ function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
 export default function SettingsPage() {
   const { settings, updateSettings } = useAppStore()
   const { theme, toggle: toggleTheme } = useTheme()
+  const toast = useToast()
   const [tab, setTab] = useState<'general' | 'profile' | 'schedule' | 'privacy' | 'billing'>('general')
   const [saved, setSaved] = useState(false)
 
@@ -414,7 +416,7 @@ export default function SettingsPage() {
                     <motion.button
                       whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => { updateSettings({ plan: 'pro', aiUsesRemaining: Infinity }); alert('Pro unlocked! (Demo mode)') }}
+                      onClick={() => { updateSettings({ plan: 'pro', aiUsesRemaining: Infinity }); toast.success('Pro unlocked! All features enabled. ✨') }}
                       className="w-full py-3.5 rounded-2xl font-black text-base transition-all"
                       style={{ background: 'white', color: '#5B21B6', fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                     >

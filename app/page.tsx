@@ -15,6 +15,7 @@ import { AssignmentCard } from '@/components/assignments/AssignmentCard'
 import { FocusMode } from '@/components/dashboard/FocusMode'
 import { MoodSelector, MoodLevel } from '@/components/dashboard/MoodSelector'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { OnboardingModal } from '@/components/onboarding/OnboardingModal'
 import { Assignment } from '@/store/types'
 
 const container = {
@@ -36,15 +37,23 @@ function getGreeting() {
 }
 
 export default function DashboardPage() {
-  const { assignments, events, generatedSchedules, settings, checkAndUpdateStreak } = useAppStore()
+  const { assignments, events, generatedSchedules, settings, checkAndUpdateStreak, updateSettings } = useAppStore()
   const [showPlan, setShowPlan]         = useState(false)
   const [showAddTask, setShowAddTask]   = useState(false)
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [focusTask, setFocusTask]       = useState<Assignment | null>(null)
   const [mood, setMood]                 = useState<MoodLevel>(3)
   const [showMood, setShowMood]         = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
-  useEffect(() => { checkAndUpdateStreak() }, [])
+  useEffect(() => {
+    checkAndUpdateStreak()
+    // Show onboarding for new users after a short delay
+    if (!(settings as any).hasOnboarded) {
+      const t = setTimeout(() => setShowOnboarding(true), 600)
+      return () => clearTimeout(t)
+    }
+  }, [])
 
   const todayStr = format(new Date(), 'yyyy-MM-dd')
   const todayEvents = events.filter((e) => e.date === todayStr).sort((a, b) => a.startTime.localeCompare(b.startTime))
@@ -55,18 +64,6 @@ export default function DashboardPage() {
     if (!d) return ''
     if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d
     try { return format(new Date(d), 'yyyy-MM-dd') } catch { return d }
-  }
-
-  // Debug: log to console in development so we can see what's stored
-  if (typeof window !== 'undefined') {
-    console.log('[Tempo debug] todayStr:', todayStr)
-    console.log('[Tempo debug] assignments:', assignments.map(a => ({
-      title: a.title,
-      dueDate: a.dueDate,
-      normalized: normDate(a.dueDate),
-      completed: a.completed,
-      matchesToday: normDate(a.dueDate) === todayStr,
-    })))
   }
 
   const overdue  = assignments.filter((a) => !a.completed && normDate(a.dueDate) < todayStr)
@@ -486,6 +483,13 @@ export default function DashboardPage() {
             onClose={() => setFocusTask(null)}
             onComplete={() => setFocusTask(null)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Onboarding */}
+      <AnimatePresence>
+        {showOnboarding && (
+          <OnboardingModal onComplete={() => setShowOnboarding(false)} />
         )}
       </AnimatePresence>
     </>
