@@ -64,7 +64,7 @@ export function Sidebar() {
   const handleSignOut = async () => {
     try {
       const supabase = createClient()
-      await supabase.auth.signOut()
+      if (supabase) await supabase.auth.signOut()
     } catch {}
     toast.info('Signed out')
     router.push('/auth')

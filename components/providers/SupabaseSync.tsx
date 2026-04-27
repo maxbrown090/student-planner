@@ -12,6 +12,7 @@ export function SupabaseSync() {
 
   useEffect(() => {
     const supabase = createClient()
+    if (!supabase) return
 
     const sync = async () => {
       const { data: { user } } = await supabase.auth.getUser()

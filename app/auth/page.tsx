@@ -55,6 +55,7 @@ export default function AuthPage() {
   const [showPassword, setShow] = useState(false)
 
   const supabase = createClient()
+  const supabaseReady = !!supabase
 
   useEffect(() => {
     if (params.get('error') === 'oauth_failed') {
@@ -64,6 +65,10 @@ export default function AuthPage() {
 
   // ── OAuth sign in ───────────────────────────────────────────────────────────
   const handleOAuth = async (provider: 'google' | 'apple' | 'github') => {
+    if (!supabase) {
+      toast.error('Authentication is not configured yet.')
+      return
+    }
     setLoading(provider)
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -87,6 +92,10 @@ export default function AuthPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.trim() || !password) return
+    if (!supabase) {
+      toast.error('Authentication is not configured yet.')
+      return
+    }
     setLoading('email')
     const { error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
@@ -113,6 +122,10 @@ export default function AuthPage() {
     }
     if (!/^[a-z0-9_]{3,20}$/.test(username)) {
       toast.error('Username: 3–20 chars, letters/numbers/underscores only')
+      return
+    }
+    if (!supabase) {
+      toast.error('Authentication is not configured yet.')
       return
     }
 
@@ -247,6 +260,19 @@ export default function AuthPage() {
               </p>
             </motion.div>
           </AnimatePresence>
+
+          {!supabaseReady && (
+            <div className="mb-5 p-3 rounded-xl text-xs"
+              style={{
+                background: 'rgba(255,179,71,0.12)',
+                border: '1px solid rgba(255,179,71,0.35)',
+                color: 'var(--text)',
+              }}>
+              <strong className="font-bold">Auth is not configured.</strong> Add{' '}
+              <code className="font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and{' '}
+              <code className="font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in Vercel → Settings → Environment Variables, then redeploy. You can keep using the app locally without signing in.
+            </div>
+          )}
 
           {/* OAuth buttons */}
           <div className="space-y-2.5">
