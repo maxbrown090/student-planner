@@ -1,32 +1,17 @@
-const CACHE = 'tempo-v1'
-const SHELL = ['/', '/calendar', '/assignments', '/bucket-list', '/gpa', '/friends', '/messages', '/settings']
-
-self.addEventListener('install', (e) => {
+// Kill-switch service worker.
+// Old versions of this SW used a cache-first strategy that pinned every
+// returning user to a broken build. This version unregisters itself and
+// wipes all caches so the next page load fetches fresh from the network.
+self.addEventListener('install', () => {
   self.skipWaiting()
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL).catch(() => {})))
 })
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    )
-  )
-  self.clients.claim()
-})
-
-self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return
-  const url = new URL(e.request.url)
-  if (url.pathname.startsWith('/api/')) return // never cache API calls
-
-  e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const network = fetch(e.request).then((res) => {
-        if (res.ok) caches.open(CACHE).then((c) => c.put(e.request, res.clone()))
-        return res
-      })
-      return cached || network
-    })
-  )
+  e.waitUntil((async () => {
+    const keys = await caches.keys()
+    await Promise.all(keys.map((k) => caches.delete(k)))
+    const regs = await self.registration.unregister()
+    const clients = await self.clients.matchAll({ type: 'window' })
+    clients.forEach((c) => c.navigate(c.url))
+  })())
 })
